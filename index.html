@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instant Meme & Quote Generator</title>
+    
+    <!-- ADSTERRA POPUNDER CODE PLACEHOLDER -->
+    <!-- Paste your Adsterra Popunder script right before </head> -->
+    <!-- Example: <script type='text/javascript' src='//your-adsterra-popunder-url.js'></script> -->
+
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-color: #f8fafc;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        /* Ad Slots Styling */
+        .ad-slot {
+            width: 100%;
+            max-width: 728px;
+            min-height: 90px;
+            background: var(--card-bg);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 0.85rem;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        input[type="text"], select, input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: #0f172a;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent);
+        }
+
+        .row-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row-controls > div {
+            flex: 1;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 42px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: #0f172a;
+            cursor: pointer;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-download {
+            grid-column: span 2;
+            background: #10b981;
+        }
+
+        .btn-download:hover {
+            background: #059669;
+        }
+
+        .btn-quote {
+            background: #3b82f6;
+        }
+
+        .btn-quote:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP ADSTERRA BANNER SLOT (e.g., 728x90 or 320x50) -->
+    <div class="ad-slot">
+        <!-- PASTE YOUR ADSTERRA BANNER CODE HERE -->
+        <span>[ Adsterra Top Banner Slot ]</span>
+    </div>
+
+    <header>
+        <h1>Meme & Quote Generator</h1>
+        <p>Create funny memes or inspirational quotes in seconds!</p>
+    </header>
+
+    <div class="main-container">
+        <!-- CANVAS DISPLAY -->
+        <div class="canvas-wrapper">
+            <canvas id="memeCanvas" width="500" height="500"></canvas>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="controls">
+            <!-- Text Inputs -->
+            <div class="input-group">
+                <label for="topText">Top Text / Main Quote</label>
+                <input type="text" id="topText" placeholder="Type top text or quote..." oninput="drawCanvas()">
+            </div>
+
+            <div class="input-group">
+                <label for="bottomText">Bottom Text (Optional for Memes)</label>
+                <input type="text" id="bottomText" placeholder="Type bottom text..." oninput="drawCanvas()">
+            </div>
+
+            <!-- Custom Image Upload -->
+            <div class="input-group">
+                <label for="imageLoader">Upload Custom Background/Meme Template</label>
+                <input type="file" id="imageLoader" accept="image/*" onchange="handleImageUpload(event)">
+            </div>
+
+            <!-- Customization Options -->
+            <div class="row-controls">
+                <div class="input-group">
+                    <label for="textColor">Text Color</label>
+                    <input type="color" id="textColor" value="#ffffff" onchange="drawCanvas()">
+                </div>
+                <div class="input-group">
+                    <label for="fontSize">Font Size</label>
+                    <select id="fontSize" onchange="drawCanvas()">
+                        <option value="20">Small</option>
+                        <option value="32" selected>Medium</option>
+                        <option value="44">Large</option>
+                        <option value="56">Extra Large</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="btn-grid">
+                <button class="btn-quote" onclick="generateRandomQuote()">Get Random Quote</button>
+                <button onclick="changeGradientBackground()">Change Background Color</button>
+                <button class="btn-download" onclick="downloadImage()">Download Image</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM ADSTERRA BANNER SLOT (e.g., 300x250 or Native Ad) -->
+    <div class="ad-slot">
+        <!-- PASTE YOUR ADSTERRA BOTTOM/NATIVE AD CODE HERE -->
+        <span>[ Adsterra Bottom/Native Ad Slot ]</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('memeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State variables
+        let uploadedImage = null;
+        let currentBgIndex = 0;
+
+        const backgrounds = [
+            ['#4f46e5', '#7c3aed'],
+            ['#059669', '#10b981'],
+            ['#dc2626', '#f97316'],
+            ['#2563eb', '#38bdf8'],
+            ['#111827', '#374151']
+        ];
+
+        const randomQuotes = [
+            "Do what you can, with what you have, where you are.",
+            "Stay hungry, stay foolish.",
+            "Make today so awesome that yesterday gets jealous.",
+            "It’s not a bug, it’s an undocumented feature.",
+            "Simplicity is the ultimate sophistication.",
+            "Dream big and dare to fail."
+        ];
+
+        // Initialize with default view
+        window.onload = function() {
+            document.getElementById('topText').value = "Make today so awesome!";
+            drawCanvas();
+        };
+
+        function drawCanvas() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Background (Image or Gradient)
+            if (uploadedImage) {
+                ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+            } else {
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, backgrounds[currentBgIndex][0]);
+                gradient.addColorStop(1, backgrounds[currentBgIndex][1]);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // 2. Text Settings
+            const topText = document.getElementById('topText').value.trim();
+            const bottomText = document.getElementById('bottomText').value.trim();
+            const textColor = document.getElementById('textColor').value;
+            const fontSize = parseInt(document.getElementById('fontSize').value);
+
+            ctx.fillStyle = textColor;
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = Math.max(2, Math.floor(fontSize / 8));
+            ctx.font = `bold ${fontSize}px Impact, 'Segoe UI', sans-serif`;
+            ctx.textAlign = 'center';
+
+            // 3. Draw Top Text / Quote
+            if (topText) {
+                if (bottomText) {
+                    // Classic Meme Style (Top Text)
+                    ctx.textBaseline = 'top';
+                    drawTextWithOutline(topText.toUpperCase(), canvas.width / 2, 20, 460, fontSize * 1.2);
+                } else {
+                    // Quote Style (Centered)
+                    ctx.textBaseline = 'middle';
+                    drawWrappedText(topText, canvas.width / 2, canvas.height / 2, 440, fontSize * 1.3);
+                }
+            }
+
+            // 4. Draw Bottom Text (Meme Style)
+            if (bottomText) {
+                ctx.textBaseline = 'bottom';
+                drawTextWithOutline(bottomText.toUpperCase(), canvas.width / 2, canvas.height - 20, 460, fontSize * 1.2);
+            }
+        }
+
+        // Helper to draw text with black outline (classic meme format)
+        function drawTextWithOutline(text, x, y, maxWidth, lineHeight) {
+            const lines = getWrappedLines(text, maxWidth);
+            lines.forEach((line, index) => {
+                let currentY = y + (index * lineHeight);
+                ctx.strokeText(line, x, currentY);
+                ctx.fillText(line, x, currentY);
+            });
+        }
+
+        // Helper for centered quote multi-line text
+        function drawWrappedText(text, x, startY, maxWidth, lineHeight) {
+            const lines = getWrappedLines(text, maxWidth);
+            let totalHeight = lines.length * lineHeight;
+            let initialY = startY - (totalHeight / 2) + (lineHeight / 2);
+
+            lines.forEach((line, index) => {
+                let currentY = initialY + (index * lineHeight);
+                ctx.strokeText(line, x, currentY);
+                ctx.fillText(line, x, currentY);
+            });
+        }
+
+        // Split text into lines to fit canvas
+        function getWrappedLines(text, maxWidth) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    lines.push(line.trim());
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line.trim());
+            return lines;
+        }
+
+        // Event: Upload custom background image
+        function handleImageUpload(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedImage = new Image();
+                uploadedImage.onload = function() {
+                    drawCanvas();
+                };
+                uploadedImage.src = event.target.result;
+            };
+            if (e.target.files[0]) {
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        }
+
+        // Event: Cycle background colors
+        function changeGradientBackground() {
+            uploadedImage = null; // Clear image if switching back to gradients
+            document.getElementById('imageLoader').value = ''; 
+            currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
+            drawCanvas();
+        }
+
+        // Event: Get random inspirational quote
+        function generateRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * randomQuotes.length);
+            document.getElementById('topText').value = randomQuotes[randomIndex];
+            document.getElementById('bottomText').value = ''; // Clear bottom text for quote format
+            drawCanvas();
+        }
+
+        // Event: Download generated image
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'meme-quote.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
